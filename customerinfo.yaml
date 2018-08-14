@@ -1,0 +1,206 @@
+---
+swagger: '2.0'
+info:
+  title: CustomerInfo
+  description: |
+    Fetch contact and account information for given input parameters.
+    Input can be a Salesforce id or an email address. If the id is for
+    an account then no contact information will be returned.
+  version: "1.1.0"
+schemes:
+  - http
+  - https
+produces:
+  - application/json
+host:
+  sapconcur.my.salesforce.com
+paths:
+  /services/apexrest/customer:
+    get:
+      parameters:
+        - name: id
+          in: query
+          description: Id of account or contact
+          required: false
+          type: string
+          minimum: 15
+          maximum: 18
+        - name: email
+          in: query
+          description: email contact or lead
+          required: false
+          type: string
+          maximum: 80
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Rsp'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/ErrorRsp'
+definitions:
+  Account:
+    type: object
+    properties:
+      salesforce_id:
+        type: string
+        minimum: 15
+        maximum: 18
+      hybris_id:
+        type: string
+      name:
+        type: string
+        maximum: 255
+      type:
+        type: string
+        maximum: 40
+        enum:
+          - Customer
+          - Prospect
+      phone:
+        type: string
+        maximum: 40
+      fax:
+        type: string
+        maximum: 40
+      website:
+        type: string
+        maximum: 255
+      domain:
+        type: string
+        maximum: 50
+      employees:
+        type: integer
+        format: int32
+      industry:
+        type: string
+        maximum: 40
+      business_unit:
+        type: string
+        maximum: 255
+      theater:
+        type: string
+        maximum: 1300
+      market:
+        type: string
+        maximum: 255
+      customer_currency:
+        type: string
+        maximum: 255
+      invoice_language:
+        type: string
+        maximum: 255
+      billing_cycle:
+        type: string
+        maximum: 255
+      payment_terms:
+        type: string
+        maximum: 255
+      payment_method:
+        type: string
+        maximum: 255
+      payment_type:
+        type: string
+        maximum: 255
+      contract_term:
+        type: string
+        format: date
+      tax_exempt:
+        type: boolean
+      address:
+        $ref: '#/definitions/Address'
+      contact_billing:
+        $ref: '#/definitions/Contact'
+      contact_service:
+        $ref: '#/definitions/Contact'
+      contact_notice:
+        $ref: '#/definitions/Contact'
+    required:
+      - name
+      - employees
+  Contact:
+    type: object
+    properties:
+      salesforce_id:
+        type: string
+        minimum: 15
+        maximum: 18
+      hybris_id:
+        type: string
+      account_id:
+        type: string
+        minimum: 15
+        maximum: 18
+      full_name:
+        type: string
+        maximum: 121
+      first_name:
+        type: string
+        maximum: 40
+      last_name:
+        type: string
+        maximum: 80
+      title:
+        type: string
+        maximum: 255
+      email:
+        type: string
+        maximum: 80
+      phone:
+        type: string
+        maximum: 40
+      status:
+        type: string
+        maximum: 255
+      address:
+        $ref: '#/definitions/Address'
+    required:
+      - account_id
+      - last_name
+  Address:
+    type: object
+    properties:
+      street1:
+        type: string
+        maximum: 140
+      street2:
+        type: string
+        maximum: 140
+      city:
+        type: string
+        maximum: 80
+      state_province:
+        type: string
+        maximum: 60
+      postal_code:
+        type: string
+        maximum: 20
+      country:
+        type: string
+        maximum: 255
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
+  Rsp:
+    type: object
+    properties:
+      account:
+        $ref: '#/definitions/Account'
+      contact:
+        $ref: '#/definitions/Contact'
+    required:
+      - account
+  ErrorRsp:
+    type: object
+    properties:
+      error:
+        $ref: '#/definitions/Error'

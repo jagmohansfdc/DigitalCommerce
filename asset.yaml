@@ -1,0 +1,147 @@
+swagger: '2.0'
+info:
+  description: |
+    Retrieve asset information for specified account. Only active base
+    assets are returned with status = 'purchased'.
+  version: 1.1.0
+  title: asset
+  contact:
+    email: miles.ulrich@sap.com
+schemes:
+  - http
+  - https
+produces:
+  - application/json
+host:
+  sapconcur.my.salesforce.com
+basePath: /services/apexrest
+
+paths:
+  /asset:
+    get:
+      description: |
+        Gets core assets that are currently active
+      produces:
+      - application/json
+      parameters:
+      - in: query
+        name: id
+        description: pass in id of account
+        required: true
+        type: string
+        minimum: 15
+        maximum: 18
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/Assets'
+        409:
+          description: an existing item already exists
+          schema:
+            $ref: '#/definitions/Rsp_Error'
+
+definitions:
+  Assets:
+    type: object
+    properties:
+      assets:
+        type: array
+        items:
+          $ref: '#/definitions/Asset'
+  Asset:
+    type: object
+    properties:
+      salesforce_id:
+        type: string
+        maximum: 18
+        minimum: 15
+      account_id:
+        type: string
+        maximum: 18
+        minimum: 15
+      product_id:
+        type: string
+        maximum: 18
+        minimum: 15
+      service_account_id:
+        type: string
+        maximum: 255
+      product_isactive:
+        type: boolean
+      product_category:
+        type: string
+        maximum: 40
+      product_rollup:
+        type: boolean
+      name:
+        type: string
+        maximum: 255
+      status:
+        type: string
+        maximum: 40
+        enum: [Active, Purchased, Upgrade, Cancelled, Consolidated, Contact Change, "Not Supported in BMI"]
+      item_type:
+        type: string
+        maximum: 255
+        enum: [Setup, Base, Incremental, Pre-Production]
+      po_category:
+        type: string
+        maximum: 128
+      pi_id:
+        type: string
+        maximum: 30
+      po_id:
+        type: string
+        maximum: 30
+      opportunity_type:
+        type: string
+        maximum: 255
+        enum: [New, Add-On]
+      action:
+        type: string
+        maximum: 255
+        enum: [Create, Modify, Terminate]
+      currencyisocode:
+        type: string
+        maximum: 255
+        enum: [AUD, BRL, CAD, CHF, CNY, EUR, GBP, HKD, INR, JPY, NZD, SGD, USD]
+      extended_net_price:
+        type: number
+        format: double
+      net_price:
+        type: number
+        format: double
+      uom:
+        type: string
+        maximum: 128
+      quantity:
+        type: number
+        format: double
+      number_of_committed_trnxs:
+        type: number
+        format: double
+      purchase_date:
+        type: string
+        format: date
+      begin_date:
+        type: string
+        format: date
+  Rsp_Error:
+    type: object
+    properties:
+      error:
+        $ref: '#/definitions/Error'
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
+  

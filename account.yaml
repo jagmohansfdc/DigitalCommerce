@@ -1,0 +1,233 @@
+swagger: '2.0'
+info:
+  description: Retrieve and update account information
+  version: 1.1.1
+  title: account
+  contact:
+    email: miles.ulrich@sap.com
+schemes:
+  - http
+  - https
+produces:
+  - application/json
+host: sapconcur.my.salesforce.com
+basePath: /services/apexrest
+paths:
+  /account:
+    get:
+      parameters:
+        - name: id
+          in: query
+          description: Id of account
+          required: false
+          type: string
+          minimum: 15
+          maximum: 18
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Rsp_Get'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/Rsp_Error'
+    post:
+      summary: create / update a new account
+      operationId: upsertAccount
+      description: |
+        Creates or updates an account.  Update is performed if account id is
+        provided.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: account
+          description: account info to create/update
+          schema:
+            $ref: '#/definitions/AccountInfo'
+      responses:
+        '201':
+          description: account created or updated
+          schema:
+            $ref: '#/definitions/Rsp_Post'
+        '400':
+          description: 'invalid input, object invalid'
+          schema:
+            $ref: '#/definitions/Rsp_Error'
+        '409':
+          description: name conflict while creating eccount
+          schema:
+            $ref: '#/definitions/Rsp_Error'
+definitions:
+  AccountInfo:
+    type: object
+    properties:
+      salesforce_id:
+        type: string
+        minimum: 15
+        maximum: 18
+      hybris_id:
+        type: string
+      name:
+        type: string
+        maximum: 255
+      type:
+        type: string
+        maximum: 40
+        enum:
+          - Customer
+          - Prospect
+      phone:
+        type: string
+        maximum: 40
+      fax:
+        type: string
+        maximum: 40
+      website:
+        type: string
+        maximum: 255
+      domain:
+        type: string
+        maximum: 50
+      employees:
+        type: integer
+        format: int32
+      industry:
+        type: string
+        maximum: 40
+      business_unit:
+        type: string
+        maximum: 255
+      theater:
+        type: string
+        maximum: 1300
+      market:
+        type: string
+        maximum: 255
+      customer_currency:
+        type: string
+        maximum: 255
+      invoice_language:
+        type: string
+        maximum: 255
+      billing_cycle:
+        type: string
+        maximum: 255
+      payment_terms:
+        type: string
+        maximum: 255
+      payment_method:
+        type: string
+        maximum: 255
+      payment_type:
+        type: string
+        maximum: 255
+      contract_term:
+        type: string
+        format: date
+      tax_exempt:
+        type: boolean
+      address:
+        $ref: '#/definitions/Address'
+      contact_billing:
+        $ref: '#/definitions/Contact'
+      contact_service:
+        $ref: '#/definitions/Contact'
+      contact_notice:
+        $ref: '#/definitions/Contact'
+    required:
+      - name
+      - employees
+  Contact:
+    type: object
+    properties:
+      salesforce_id:
+        type: string
+        minimum: 15
+        maximum: 18
+      hybris_id:
+        type: string
+      account_id:
+        type: string
+        minimum: 15
+        maximum: 18
+      full_name:
+        type: string
+        maximum: 121
+      first_name:
+        type: string
+        maximum: 40
+      last_name:
+        type: string
+        maximum: 80
+      title:
+        type: string
+        maximum: 255
+      email:
+        type: string
+        maximum: 80
+      phone:
+        type: string
+        maximum: 40
+      status:
+        type: string
+        maximum: 255
+      address:
+        $ref: '#/definitions/Address'
+    required:
+      - account_id
+      - last_name
+  Address:
+    type: object
+    properties:
+      street1:
+        type: string
+        maximum: 140
+      street2:
+        type: string
+        maximum: 140
+      city:
+        type: string
+        maximum: 80
+      state_province:
+        type: string
+        maximum: 60
+      postal_code:
+        type: string
+        maximum: 20
+      country:
+        type: string
+        maximum: 255
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
+  Rsp_Error:
+    type: object
+    properties:
+      error:
+        $ref: '#/definitions/Error'
+  Rsp_Post:
+    properties:
+      id:
+        type: string
+        minimum: 15
+        maximum: 18
+    required:
+      - id
+  Rsp_Get:
+    type: object
+    properties:
+      account:
+        $ref: '#/definitions/AccountInfo'
+    required:
+      - account

@@ -1,0 +1,110 @@
+swagger: '2.0'
+info:
+  description: |
+    Add / replace products on opportunity.  Products are defined
+    by the PO and PI ids along with quantity and price.
+    Any existing line items are removed from the opportunity and
+    replaced with the new line items.
+  version: 1.1.0
+  title: products
+  contact:
+    email: miles.ulrich@sap.com
+schemes:
+  - http
+  - https
+produces:
+  - application/json
+host:
+  sapconcur.my.salesforce.com
+basePath: /services/apexrest
+
+paths:
+  /products:
+    post:
+      description: |
+        Query param determines opportunity. Provide an array of 
+        opportunity line items in the body. Line items will be
+        added to the opportunity. Prior line items will be removed.
+      # This is array of POST operation parameters:
+      parameters:
+        - name: id
+          in: query
+          description: Id of opportunity. Can provide in query string or in path.
+          required: true
+          type: string
+          minimum: 15
+          maximum: 18
+        - name: products
+          description: list of products
+          in: body
+          schema:
+            $ref: "#/definitions/Products"
+      responses:
+        201:
+          description: item created.
+          schema:
+            type: string
+        400:
+          description: invalid input, object invalid
+          schema:
+            $ref: '#/definitions/Rsp_Error'
+                  
+definitions:
+  Products:
+    type: object
+    properties:
+      products:
+        type: array
+        items: 
+          $ref: '#/definitions/Product'
+
+  Product:
+      title: product
+      type: object
+      properties:
+        opportunity_id:
+          type: string
+          minimum: 15
+          maximum: 18
+        po_id:
+          type: string
+          maximum: 30
+        pi_id:
+          type: string
+          maximum: 30
+        quantity:
+          type: integer
+        unit_price:
+          type: number
+          format: double
+        base_transactions:
+          type: number
+          format: integer
+        base_trans_fee:
+          type: number
+          format: double
+        incr_trans_fee:          
+          type: number
+          format: double
+      required:
+        - opportunity_id
+        - po_id
+        - pi_id
+        - quantity
+
+  Rsp_Error:
+    type: object
+    properties:
+      error:
+        $ref: '#/definitions/Error'
+        
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
