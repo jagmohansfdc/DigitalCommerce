@@ -1,0 +1,100 @@
+swagger: "2.0"
+info:
+  description: "This REST call allows to upload a file to Salesforce and attach it to a Sales Order"
+  version: "1.0.1"
+  title: "Upload Order File"
+  contact:
+    email: "aldo.cuevas@sap.com"
+host: "sapconcur.my.salesforce.com"
+basePath: "/services/apexrest"
+tags:
+- name: "upload order file"
+  description: "Upload a file"
+schemes:
+  - https
+produces:
+  - application/json
+paths:
+  /orderfile:
+    post:
+      tags:
+      - "upload order file"
+      summary: "Uploads a snapshot of the Order summary"
+      description: "Uploads a snapshot of the Order summary to Salesforce"
+      operationId: "addOrderFile"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "OrderFile"
+        description: "File object with validation and order parameters"
+        required: true
+        schema:
+          $ref: "#/definitions/OrderFile"
+      responses:
+        200:
+          description: "Successful operation"
+        400:
+          description: "Invalid input"
+          schema:
+            $ref: '#/definitions/ErrorRsp'
+        409:
+          description: "MD5 Checksum does not match"
+          schema:
+            $ref: '#/definitions/ErrorRsp'
+definitions:
+  OrderFile:
+    type: "object"
+    required:
+    - "opportunityId"
+    - "orderId"
+    - "mimeType"
+    - "contentLength"
+    - "fileContent"
+    - "MD5checksum"
+    properties:
+      opportunityId:
+            type: "string"
+            description: "Salesforce Opporunity Id associated to the Order"
+            example: "0065B000009obYZ"
+      orderId:
+            type: "string"
+            description: "Hybris Sales Order Id"
+            example: "100003"
+      mimeType:
+        type: "string"
+        description: "Definition of the MIME type of the file being transferred. PDF only for now"
+        enum:
+        - "application/pdf"
+        example: "application/pdf"
+      contentLength:
+        type: "integer"
+        description: "Size of the base64 encoded string in bytes."
+        format: "int64"
+        example: "156546"
+      fileContent:
+        type: "string"
+        description: "Base64 encoded representation of the uploaded file."
+        example: "/9j/4AAQSkZJRgABAgAAZABkAAD/7AARRHVja3kAAQAEAAAAZAAA/+EEEWh0dHA6Ly9ucy5hZG9i
+ZS5jb20veGFwLzEuMC8APD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxTEgNzkuMTU4MzI1LCAyMDE1LzA5LzEwLTAxOjEwOjIwICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA"
+      MD5checksum:
+        type: "string"
+        example: "595f44fec1e92a71d3e9e77456ba80d1"
+        description: "MD5 checksum for the original file."
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
+  ErrorRsp:
+    type: object
+    properties:
+      error:
+        $ref: '#/definitions/Error'

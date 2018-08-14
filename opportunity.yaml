@@ -1,0 +1,150 @@
+swagger: '2.0'
+info:
+  description: Create opportunity
+  version: 1.1.1
+  title: opportunity
+  contact:
+    email: miles.ulrich@sap.com
+schemes:
+  - http
+  - https
+produces:
+  - application/json
+host:
+  sapconcur.my.salesforce.com
+basePath: /services/apexrest
+
+paths:
+  /opportunity:
+    get:
+      summary: fetch opportunity
+      parameters:
+        - name: id
+          in: query
+          description: Id of opportunity. Can provide in query string or in path.
+          required: false
+          type: string
+          minimum: 15
+          maximum: 18
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Opportunity'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/Rsp_Error'
+
+    post:
+      summary: create an opportunity
+      operationId: createOpportunity
+      description: |
+        Creates an opportunity using defaults for digital commerce.
+        Each opportunity should represent a cart in Hybris.
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+        - name: opportunityid
+          in: query
+          description: Opportunity is created on specified account
+          required: false
+          type: string
+          minimum: 15
+          maximum: 18
+        - in: body
+          name: body
+          description: Request body.
+          schema:
+            $ref: '#/definitions/Opportunity'
+      responses:
+        201:
+          description: item created
+          schema:
+            $ref: '#/definitions/Rsp_Post'
+        400:
+          description: invalid input, object invalid
+          schema:
+            $ref: '#/definitions/Rsp_Error'
+        409:
+          description: an existing item already exists
+          schema:
+            $ref: '#/definitions/Rsp_Error'
+
+definitions:
+  Opportunity:
+    type: object
+    properties:
+      salesforce_id:
+        type: string
+        minimum: 15
+        maximum: 18
+      account_id:
+        type: string
+        minimum: 15
+        maximum: 18
+      contact_id:
+        type: string
+        minimum: 15
+        maximum: 18
+      cart_id:
+        type: string
+      payment_account:
+        type: string
+        maximum: 40
+      payment_card_type:
+        type: string
+        maximum: 40
+      payment_card_number:
+        type: string
+        maximum: 4
+      payment_card_expiration:
+        type: string
+        maximum: 10
+      payment_token:
+        type: string
+        maximum: 40
+      payment_reason_code:
+        type: string
+        maximum: 5
+      payment_decision:
+        type: string
+        maximum: 10
+      bank_account_number:
+        type: string
+        maximum: 40
+      bank_routing_number:
+        type: string
+        maximum: 20
+      payment_method:
+        type: string
+        maximum: 40
+        
+    required:
+      - account_id
+      - contact_id
+  Rsp_Post:
+    properties:
+      id:
+        type: string
+        minimum: 15
+        maximum: 18
+    required:
+      - id
+  Rsp_Error:
+    type: object
+    properties:
+      error:
+        $ref: '#/definitions/Error'
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string  

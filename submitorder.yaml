@@ -1,0 +1,78 @@
+swagger: '2.0'
+info:
+  description: submit order
+  version: 1.0.0
+  title: submit order
+  contact:
+    email: miles.ulrich@sap.com
+schemes:
+  - http
+  - https
+produces:
+  - application/json
+host:
+  test.salesforce.com
+basePath: /services/apexrest
+
+paths:
+  /submitorder:
+    post:
+      summary: submit an opportunity
+      operationId: submitOrder
+      description: |
+        Submits the opportunity specified.
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+        - name: id
+          in: query
+          description: Opportunity to submit
+          required: true
+          type: string
+        - name: order
+          in: body
+          schema:
+            $ref: '#/definitions/Order'
+      responses:
+        201:
+          description: item created.
+          schema:
+            type: string
+        400:
+          description: invalid input, object invalid
+          schema:
+            $ref: '#/definitions/Error'
+
+definitions:
+  Order:
+    type: object
+    properties:
+      contact_id:
+        description: The Id of the contact who is submitting the order.  This may be different that the cart owner.
+        type: string
+        minimum: 15
+        maximum: 18
+      promotions:
+        $ref: '#/definitions/Promos'
+  Promos:
+    type: object
+    properties:
+      promotions:
+        type: string
+        description: Comma deliminated promotion codes
+        example: PROMO1,PROMO2,PROMO3
+  Error:
+    type: object
+    properties:
+      error:
+        type: object
+        properties:
+          code:
+            type: integer
+            format: int32
+          message:
+            type: string
+          fields:
+            type: string
