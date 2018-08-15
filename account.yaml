@@ -175,6 +175,9 @@ definitions:
       status:
         type: string
         maximum: 255
+      status1:
+        type: string
+        maximum: 255
       address:
         $ref: '#/definitions/Address'
     required:
