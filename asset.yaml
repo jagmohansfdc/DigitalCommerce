@@ -129,6 +129,9 @@ definitions:
       begin_date:
         type: string
         format: date
+      begin_date_Demo:
+        type: string
+        format: date
   Rsp_Error:
     type: object
     properties:
