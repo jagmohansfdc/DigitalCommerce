@@ -204,6 +204,9 @@ definitions:
       country:
         type: string
         maximum: 255
+      City:
+        type: string
+        maximum: 255
   Error:
     type: object
     properties:
